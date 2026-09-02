@@ -1,0 +1,383 @@
+@model CurriculumViewModel
+@{
+    ViewData["Title"] = "Mi hoja de vida";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1"><i class="bi bi-file-person me-2 text-primary"></i>Mi hoja de vida</h1>
+        <p class="text-muted mb-0">Completa cada sección y descarga tu PDF cuando quieras.</p>
+    </div>
+
+    @if (Model.TienePerfil)
+    {
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-outline-secondary" asp-action="VistaPrevia">
+                <i class="bi bi-eye me-1"></i>Vista previa
+            </a>
+            <a class="btn btn-outline-secondary" asp-action="Plantillas">
+                <i class="bi bi-palette me-1"></i>Plantillas
+            </a>
+            <a class="btn btn-primary" asp-action="Descargar">
+                <i class="bi bi-file-earmark-pdf me-1"></i>Descargar PDF
+            </a>
+            <form asp-action="EnviarPorCorreo" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-envelope-paper me-1"></i>Enviármelo por correo
+                </button>
+            </form>
+        </div>
+    }
+</div>
+
+<div class="cv-card mb-4">
+    <div class="p-3 p-md-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-semibold"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Avance de tu hoja de vida</span>
+            <span class="text-muted small">@Model.PorcentajeCompletitud%</span>
+        </div>
+        <div class="progress" role="progressbar" aria-valuenow="@Model.PorcentajeCompletitud" aria-valuemin="0" aria-valuemax="100" style="height:.6rem;">
+            <div class="progress-bar" style="width:@(Model.PorcentajeCompletitud)%"></div>
+        </div>
+    </div>
+</div>
+
+@if (!Model.TienePerfil)
+{
+    <div class="cv-card">
+        <div class="cv-empty">
+            <i class="bi bi-person-plus display-6 d-block mb-3 text-muted"></i>
+            <p class="mb-3">Todavía no has registrado tus datos personales. Es el primer paso.</p>
+            <a class="btn btn-primary" asp-action="Perfil"><i class="bi bi-arrow-right-circle me-1"></i>Empezar</a>
+        </div>
+    </div>
+}
+else
+{
+    var b = Model.Basica!;
+
+    <div class="accordion cv-acordeon" id="acordeonCv">
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#secDatos" aria-expanded="true" aria-controls="secDatos">
+                    <i class="bi bi-person-vcard me-2"></i>Datos personales
+                </button>
+            </h2>
+            <div id="secDatos" class="accordion-collapse collapse show" data-bs-parent="#acordeonCv">
+                <div class="accordion-body">
+                    <div class="d-flex flex-wrap gap-4 align-items-start">
+                        @if (!string.IsNullOrWhiteSpace(b.UrlImagen) && b.UrlImagen.StartsWith('/'))
+                        {
+                            <img class="cv-foto" src="@b.UrlImagen" alt="Foto de perfil" />
+                        }
+                        else
+                        {
+                            <div class="cv-foto cv-foto-vacia"><i class="bi bi-person"></i></div>
+                        }
+                        <div class="flex-grow-1">
+                            <h3 class="h5 mb-1">@b.NombreCompleto</h3>
+                            <p class="text-muted mb-2">@b.Profesion?.Descripcion</p>
+                            <p class="mb-2 small text-muted">
+                                <i class="bi bi-envelope me-1"></i>@b.Email
+                                <i class="bi bi-phone ms-3 me-1"></i>@b.TelefonoMovil
+                                @if (b.Ciudad is not null)
+                                {
+                                    <i class="bi bi-geo-alt ms-3 me-1"></i><text>@b.Ciudad.Nombre, @b.Departamento?.Nombre</text>
+                                }
+                            </p>
+                            <p class="mb-3">@b.PerfilProfesional</p>
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Perfil">
+                                <i class="bi bi-pencil me-1"></i>Editar datos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#secExperiencia" aria-expanded="false" aria-controls="secExperiencia">
+                    <i class="bi bi-briefcase me-2"></i>Experiencia laboral
+                    <span class="badge text-bg-secondary ms-2">@Model.Experiencia.Count</span>
+                </button>
+            </h2>
+            <div id="secExperiencia" class="accordion-collapse collapse" data-bs-parent="#acordeonCv">
+                <div class="accordion-body">
+                    <div class="d-flex justify-content-end mb-3">
+                        <a class="btn btn-sm btn-primary" asp-action="Experiencia">
+                            <i class="bi bi-plus-lg me-1"></i>Agregar experiencia
+                        </a>
+                    </div>
+
+                    @if (Model.Experiencia.Count == 0)
+                    {
+                        <div class="cv-empty">
+                            <i class="bi bi-briefcase display-6 d-block mb-3 text-muted"></i>
+                            Aún no has agregado experiencia laboral.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="accordion cv-acordeon-interno" id="acordeonExp">
+                            @foreach (var exp in Model.Experiencia)
+                            {
+                                <div class="accordion-item" id="exp-@exp.LaboralId">
+                                    <h3 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#expDetalle-@exp.LaboralId" aria-expanded="false">
+                                            <span class="flex-grow-1">
+                                                <span class="fw-semibold">@exp.Cargo?.Descripcion</span>
+                                                <span class="text-muted"> · @exp.Empresa</span>
+                                                <span class="d-block text-muted small">
+                                                    @exp.FechaInicio.ToString("MMM yyyy") –
+                                                    @(exp.FechaRetiro?.ToString("MMM yyyy") ?? "Actual")
+                                                    · <i class="bi bi-trophy"></i> @exp.Logros.Count
+                                                    · <i class="bi bi-lightbulb"></i> @exp.Competencias.Count
+                                                </span>
+                                            </span>
+                                        </button>
+                                    </h3>
+
+                                    <div id="expDetalle-@exp.LaboralId" class="accordion-collapse collapse" data-bs-parent="#acordeonExp">
+                                        <div class="accordion-body">
+
+                                            <div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
+                                                <div class="text-muted small">
+                                                    @if (exp.Area is not null)
+                                                    {
+                                                        <div><i class="bi bi-diagram-3 me-1"></i>@exp.Area.Descripcion</div>
+                                                    }
+                                                    <div><i class="bi bi-person-badge me-1"></i>Jefe: @exp.JefeInmediato · @exp.Contacto</div>
+                                                    @if (exp.Estado is not null)
+                                                    {
+                                                        <div><i class="bi bi-toggle-on me-1"></i>@exp.Estado.Descripcion</div>
+                                                    }
+                                                </div>
+                                                <div class="d-flex align-items-start gap-2">
+                                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Experiencia" asp-route-id="@exp.LaboralId">
+                                                        <i class="bi bi-pencil me-1"></i>Editar
+                                                    </a>
+                                                    <form asp-action="EliminarExperiencia" method="post"
+                                                          onsubmit="return confirm('¿Eliminar esta experiencia con sus logros y competencias?');">
+                                                        <input type="hidden" name="id" value="@exp.LaboralId" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                            <i class="bi bi-trash me-1"></i>Eliminar
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                            <div class="row g-3">
+                                                <div class="col-lg-6">
+                                                    <div class="cv-subpanel h-100">
+                                                        <h4 class="cv-subpanel-titulo"><i class="bi bi-trophy me-2"></i>Logros y funciones</h4>
+
+                                                        @if (exp.Logros.Count == 0)
+                                                        {
+                                                            <p class="text-muted small mb-3">Sin logros registrados en este cargo.</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <ul class="list-unstyled cv-lista">
+                                                                @foreach (var logro in exp.Logros)
+                                                                {
+                                                                    <li>
+                                                                        <div class="flex-grow-1">
+                                                                            <span class="badge text-bg-light">@logro.Tipo?.Descripcion</span>
+                                                                            <div class="fw-semibold small mt-1">@logro.Logro</div>
+                                                                            <div class="text-muted small">@logro.Descripcion</div>
+                                                                        </div>
+                                                                        <form asp-action="EliminarLogro" method="post">
+                                                                            <input type="hidden" name="id" value="@logro.LogroId" />
+                                                                            <input type="hidden" name="laboralId" value="@exp.LaboralId" />
+                                                                            <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Quitar logro">
+                                                                                <i class="bi bi-x-circle"></i>
+                                                                            </button>
+                                                                        </form>
+                                                                    </li>
+                                                                }
+                                                            </ul>
+                                                        }
+
+                                                        <form asp-action="AgregarLogro" method="post" class="row g-2 border-top pt-3">
+                                                            <input type="hidden" name="LaboralId" value="@exp.LaboralId" />
+                                                            <div class="col-12">
+                                                                <label class="form-label small mb-1" for="logroTipo-@exp.LaboralId">Tipo</label>
+                                                                <select class="form-select form-select-sm" id="logroTipo-@exp.LaboralId" name="TipoId" required
+                                                                        asp-items="Model.TiposLogro">
+                                                                    <option value="">Selecciona…</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <label class="form-label small mb-1" for="logroNombre-@exp.LaboralId">Logro o función</label>
+                                                                <input class="form-control form-control-sm" id="logroNombre-@exp.LaboralId" name="Logro" maxlength="50" required />
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <label class="form-label small mb-1" for="logroDesc-@exp.LaboralId">Descripción</label>
+                                                                <input class="form-control form-control-sm" id="logroDesc-@exp.LaboralId" name="Descripcion" maxlength="150" required />
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <button type="submit" class="btn btn-sm btn-primary">
+                                                                    <i class="bi bi-plus-lg me-1"></i>Agregar logro
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-6">
+                                                    <div class="cv-subpanel h-100">
+                                                        <h4 class="cv-subpanel-titulo"><i class="bi bi-lightbulb me-2"></i>Competencias y habilidades</h4>
+
+                                                        @if (exp.Competencias.Count == 0)
+                                                        {
+                                                            <p class="text-muted small mb-3">Sin competencias registradas en este cargo.</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <ul class="list-unstyled cv-lista">
+                                                                @foreach (var c in exp.Competencias)
+                                                                {
+                                                                    <li>
+                                                                        <div class="flex-grow-1">
+                                                                            <span class="badge text-bg-light">@c.TipoCompetencia?.Descripcion</span>
+                                                                            <div class="fw-semibold small mt-1">@c.Descripcion</div>
+                                                                            <div class="text-muted small">Nivel: @c.Medicion</div>
+                                                                        </div>
+                                                                        <form asp-action="EliminarCompetencia" method="post">
+                                                                            <input type="hidden" name="id" value="@c.CompetenciaId" />
+                                                                            <input type="hidden" name="laboralId" value="@exp.LaboralId" />
+                                                                            <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Quitar competencia">
+                                                                                <i class="bi bi-x-circle"></i>
+                                                                            </button>
+                                                                        </form>
+                                                                    </li>
+                                                                }
+                                                            </ul>
+                                                        }
+
+                                                        <form asp-action="AgregarCompetencia" method="post" class="row g-2 border-top pt-3">
+                                                            <input type="hidden" name="LaboralId" value="@exp.LaboralId" />
+                                                            <div class="col-12">
+                                                                <label class="form-label small mb-1" for="compTipo-@exp.LaboralId">Tipo</label>
+                                                                <select class="form-select form-select-sm" id="compTipo-@exp.LaboralId" name="TipoCompetenciaId" required
+                                                                        asp-items="Model.TiposAptitud">
+                                                                    <option value="">Selecciona…</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <label class="form-label small mb-1" for="compDesc-@exp.LaboralId">Competencia o habilidad</label>
+                                                                <input class="form-control form-control-sm" id="compDesc-@exp.LaboralId" name="Descripcion" maxlength="250" required />
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <label class="form-label small mb-1" for="compNivel-@exp.LaboralId">Nivel</label>
+                                                                <input class="form-control form-control-sm" id="compNivel-@exp.LaboralId" name="Medicion" maxlength="250" placeholder="Ej. Avanzado" required />
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <button type="submit" class="btn btn-sm btn-primary">
+                                                                    <i class="bi bi-plus-lg me-1"></i>Agregar competencia
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#secFormacion" aria-expanded="false" aria-controls="secFormacion">
+                    <i class="bi bi-mortarboard me-2"></i>Formación académica
+                    <span class="badge text-bg-secondary ms-2">@Model.Formacion.Count</span>
+                </button>
+            </h2>
+            <div id="secFormacion" class="accordion-collapse collapse" data-bs-parent="#acordeonCv">
+                <div class="accordion-body">
+                    <div class="d-flex justify-content-end mb-3">
+                        <a class="btn btn-sm btn-primary" asp-action="Formacion">
+                            <i class="bi bi-plus-lg me-1"></i>Agregar formación
+                        </a>
+                    </div>
+
+                    @if (Model.Formacion.Count == 0)
+                    {
+                        <div class="cv-empty">
+                            <i class="bi bi-mortarboard display-6 d-block mb-3 text-muted"></i>
+                            Aún no has agregado formación académica.
+                        </div>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled cv-lista">
+                            @foreach (var f in Model.Formacion)
+                            {
+                                <li>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-semibold">@f.TituloOtorgado</div>
+                                        <div class="text-muted small">
+                                            <i class="bi bi-building me-1"></i>@f.Institucion ·
+                                            @f.FechaInicio.ToString("MMM yyyy") –
+                                            @(f.FechaFinalizacion?.ToString("MMM yyyy") ?? "En curso")
+                                            @if (f.Estado is not null)
+                                            {
+                                                <text> · @f.Estado.Descripcion</text>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-start gap-2">
+                                        <a class="btn btn-sm btn-outline-secondary" asp-action="Formacion" asp-route-id="@f.FormacionId">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form asp-action="EliminarFormacion" method="post"
+                                              onsubmit="return confirm('¿Eliminar este registro?');">
+                                            <input type="hidden" name="id" value="@f.FormacionId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Tras agregar o quitar un logro/competencia volvemos con #exp-N: reabrimos ese cargo.
+        (function () {
+            const coincidencia = /^#exp-(\d+)$/.exec(window.location.hash);
+            if (!coincidencia) return;
+
+            const abrir = id => {
+                const el = document.getElementById(id);
+                if (el) bootstrap.Collapse.getOrCreateInstance(el, { toggle: false }).show();
+            };
+
+            abrir('secExperiencia');
+            abrir('expDetalle-' + coincidencia[1]);
+
+            document.getElementById('exp-' + coincidencia[1])
+                ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        })();
+    </script>
+}

@@ -1,0 +1,50 @@
+@model RegistroViewModel
+@{
+    ViewData["Title"] = "Crear cuenta";
+}
+
+<div class="cv-auth-card">
+    <h1>Crea tu cuenta</h1>
+    <p class="text-muted mb-4">Es gratis y te toma menos de un minuto.</p>
+
+    <form asp-action="Registro" method="post" novalidate>
+        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label required"></label>
+            <input asp-for="Email" class="form-control" autocomplete="username" autofocus />
+            <span asp-validation-for="Email" class="text-danger small"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label required"></label>
+            <input asp-for="Password" class="form-control" autocomplete="new-password" />
+            <div class="form-text">Mínimo 8 caracteres, con al menos una mayúscula, una minúscula y un número.</div>
+            <span asp-validation-for="Password" class="text-danger small"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ConfirmPassword" class="form-label required"></label>
+            <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+        </div>
+
+        <div class="form-check mb-4">
+            <input asp-for="AceptaTerminos" class="form-check-input" />
+            <label asp-for="AceptaTerminos" class="form-check-label small">
+                Acepto el <a asp-controller="Home" asp-action="Privacy" target="_blank">tratamiento de mis datos personales</a>.
+            </label>
+            <div><span asp-validation-for="AceptaTerminos" class="text-danger small"></span></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Crear cuenta</button>
+    </form>
+
+    <p class="text-center text-muted small mt-4 mb-0">
+        ¿Ya tienes cuenta? <a asp-action="Login">Inicia sesión</a>
+    </p>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,64 @@
+@model ParametroFormViewModel
+@{
+    ViewData["Title"] = Model.EsNuevo ? "Nuevo parámetro" : "Editar parámetro";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">
+        <i class="bi bi-sliders me-2 text-primary"></i>@ViewData["Title"]
+    </h1>
+    <a class="btn btn-sm btn-outline-secondary" asp-action="Parametros" asp-route-grupo="@Model.Codigo">
+        <i class="bi bi-arrow-left me-1"></i>Volver al catálogo
+    </a>
+</div>
+
+<div class="cv-card" style="max-width:40rem;">
+    <form asp-action="Parametro" method="post" novalidate>
+        <div class="p-3 p-md-4">
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+            <input type="hidden" asp-for="ParametroId" />
+
+            <div class="mb-3">
+                <label asp-for="Codigo" class="form-label required"></label>
+                <select asp-for="Codigo" asp-items="Model.Grupos" class="form-select">
+                    <option value="">Selecciona…</option>
+                </select>
+                <div class="form-text">Corresponde a la columna <code>Cdgo</code>: define en qué lista aparecerá el valor.</div>
+                <span asp-validation-for="Codigo" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Descripcion" class="form-label required"></label>
+                <input asp-for="Descripcion" class="form-control" autofocus />
+                <div class="form-text">Es el texto que verá el usuario en el desplegable.</div>
+                <span asp-validation-for="Descripcion" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-0">
+                <label asp-for="Tipo" class="form-label required"></label>
+                <input asp-for="Tipo" class="form-control" list="etiquetasTipo" />
+                <datalist id="etiquetasTipo">
+                    @foreach (var nombre in Cur.Web.Models.Entities.GrupoParametro.Nombres.Values)
+                    {
+                        <option value="@nombre"></option>
+                    }
+                </datalist>
+                <div class="form-text">
+                    Columna <code>Tpo</code>. Es solo una etiqueta interna del grupo; no se muestra al usuario final.
+                </div>
+                <span asp-validation-for="Tipo" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="cv-card-header justify-content-end border-top border-bottom-0">
+            <a class="btn btn-outline-secondary" asp-action="Parametros" asp-route-grupo="@Model.Codigo">Cancelar</a>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-lg me-1"></i>@(Model.EsNuevo ? "Crear parámetro" : "Guardar cambios")
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

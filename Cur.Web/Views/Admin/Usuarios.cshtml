@@ -1,0 +1,143 @@
+@model UsuariosAdminViewModel
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1"><i class="bi bi-people me-2 text-primary"></i>Usuarios</h1>
+        <p class="text-muted mb-0">Bloquea el acceso o elimina cuentas junto con su hoja de vida.</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Volver al panel</a>
+</div>
+
+<div class="cv-card mb-4">
+    <form asp-action="Usuarios" method="get" class="p-3 d-flex flex-wrap gap-2">
+        <div class="input-group flex-grow-1" style="max-width:26rem;">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input class="form-control" name="busqueda" value="@Model.Busqueda" placeholder="Buscar por correo…" />
+        </div>
+        <button type="submit" class="btn btn-primary">Buscar</button>
+        @if (!string.IsNullOrWhiteSpace(Model.Busqueda))
+        {
+            <a class="btn btn-outline-secondary" asp-action="Usuarios">Limpiar</a>
+        }
+    </form>
+</div>
+
+@if (Model.Usuarios.Count == 0)
+{
+    <div class="cv-card">
+        <div class="cv-empty">
+            <i class="bi bi-search display-6 d-block mb-3 text-muted"></i>
+            No hay usuarios que coincidan con la búsqueda.
+        </div>
+    </div>
+}
+else
+{
+    <div class="accordion cv-acordeon" id="acordeonUsuarios">
+        @foreach (var u in Model.Usuarios)
+        {
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#usr-@u.Id" aria-expanded="false">
+                        <span class="flex-grow-1">
+                            <span class="fw-semibold">@u.Email</span>
+                            @if (u.EsAdministrador)
+                            {
+                                <span class="badge text-bg-primary ms-2"><i class="bi bi-shield-lock me-1"></i>Administrador</span>
+                            }
+                            @if (u.Bloqueado)
+                            {
+                                <span class="badge text-bg-danger ms-2"><i class="bi bi-lock me-1"></i>Bloqueado</span>
+                            }
+                            @if (!u.EmailConfirmado)
+                            {
+                                <span class="badge text-bg-warning ms-2"><i class="bi bi-envelope-exclamation me-1"></i>Sin confirmar</span>
+                            }
+                            <span class="d-block text-muted small">
+                                @(u.TieneHojaVida ? u.NombreCompleto : "Sin hoja de vida")
+                                · <i class="bi bi-briefcase"></i> @u.Experiencias
+                                · <i class="bi bi-mortarboard"></i> @u.Formaciones
+                            </span>
+                        </span>
+                    </button>
+                </h2>
+
+                <div id="usr-@u.Id" class="accordion-collapse collapse" data-bs-parent="#acordeonUsuarios">
+                    <div class="accordion-body">
+                        <dl class="row small mb-3">
+                            <dt class="col-sm-4 col-lg-3">Rol</dt>
+                            <dd class="col-sm-8 col-lg-9">@(u.Roles.Count > 0 ? string.Join(", ", u.Roles) : "Sin rol asignado")</dd>
+
+                            <dt class="col-sm-4 col-lg-3">Correo confirmado</dt>
+                            <dd class="col-sm-8 col-lg-9">@(u.EmailConfirmado ? "Sí" : "No")</dd>
+
+                            <dt class="col-sm-4 col-lg-3">Intentos fallidos</dt>
+                            <dd class="col-sm-8 col-lg-9">@u.AccesosFallidos</dd>
+
+                            @if (u.Bloqueado)
+                            {
+                                <dt class="col-sm-4 col-lg-3">Bloqueado hasta</dt>
+                                <dd class="col-sm-8 col-lg-9">
+                                    @(u.BloqueadoHasta == DateTimeOffset.MaxValue
+                                        ? "Indefinidamente"
+                                        : u.BloqueadoHasta?.LocalDateTime.ToString("dd/MM/yyyy HH:mm"))
+                                </dd>
+                            }
+                        </dl>
+
+                        @if (u.EsAdministrador)
+                        {
+                            <p class="text-muted small mb-0">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Las cuentas de administrador no se pueden bloquear ni eliminar desde el panel.
+                            </p>
+                        }
+                        else
+                        {
+                            <div class="d-flex flex-wrap gap-2">
+                                @if (u.Bloqueado)
+                                {
+                                    <form asp-action="Desbloquear" method="post">
+                                        <input type="hidden" name="id" value="@u.Id" />
+                                        <input type="hidden" name="busqueda" value="@Model.Busqueda" />
+                                        <button type="submit" class="btn btn-sm btn-outline-success">
+                                            <i class="bi bi-unlock me-1"></i>Desbloquear
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="Bloquear" method="post"
+                                          onsubmit="return confirm('¿Bloquear el acceso de @u.Email?');">
+                                        <input type="hidden" name="id" value="@u.Id" />
+                                        <input type="hidden" name="busqueda" value="@Model.Busqueda" />
+                                        <button type="submit" class="btn btn-sm btn-outline-warning">
+                                            <i class="bi bi-lock me-1"></i>Bloquear acceso
+                                        </button>
+                                    </form>
+                                }
+
+                                <form asp-action="EliminarUsuario" method="post"
+                                      onsubmit="return confirm('Esto elimina la cuenta @u.Email y toda su hoja de vida. Es irreversible. ¿Continuar?');">
+                                    <input type="hidden" name="id" value="@u.Id" />
+                                    <input type="hidden" name="busqueda" value="@Model.Busqueda" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash me-1"></i>Eliminar cuenta y hoja de vida
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <p class="text-muted small mt-3 mb-0">
+        Se muestran hasta 200 cuentas. Usa la búsqueda para acotar el listado.
+    </p>
+}

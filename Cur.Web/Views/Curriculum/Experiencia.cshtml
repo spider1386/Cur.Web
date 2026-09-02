@@ -1,0 +1,94 @@
+@model ExperienciaViewModel
+@{
+    var esNuevo = Model.LaboralId == 0;
+    ViewData["Title"] = esNuevo ? "Nueva experiencia" : "Editar experiencia";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">@ViewData["Title"]</h1>
+    <a class="btn btn-sm btn-outline-secondary" asp-action="Index">Volver al panel</a>
+</div>
+
+<div class="cv-card">
+    <form asp-action="Experiencia" method="post" novalidate>
+        <div class="p-3 p-md-4">
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+            <input type="hidden" asp-for="LaboralId" />
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Empresa" class="form-label required"></label>
+                    <input asp-for="Empresa" class="form-control" />
+                    <span asp-validation-for="Empresa" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="CargoId" class="form-label required"></label>
+                    <select asp-for="CargoId" asp-items="Model.Cargos" class="form-select">
+                        <option value="">Selecciona…</option>
+                    </select>
+                    <span asp-validation-for="CargoId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="AreaId" class="form-label required"></label>
+                    <select asp-for="AreaId" asp-items="Model.Areas" class="form-select">
+                        <option value="">Selecciona…</option>
+                    </select>
+                    <span asp-validation-for="AreaId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="EstadoId" class="form-label required"></label>
+                    <select asp-for="EstadoId" asp-items="Model.Estados" class="form-select">
+                        <option value="">Selecciona…</option>
+                    </select>
+                    <span asp-validation-for="EstadoId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="FechaInicio" class="form-label required"></label>
+                    <input asp-for="FechaInicio" type="date" class="form-control" />
+                    <span asp-validation-for="FechaInicio" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="FechaRetiro" class="form-label"></label>
+                    <input asp-for="FechaRetiro" type="date" class="form-control" />
+                    <div class="form-text">Déjalo vacío si sigues trabajando ahí.</div>
+                    <span asp-validation-for="FechaRetiro" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="JefeInmediato" class="form-label required"></label>
+                    <input asp-for="JefeInmediato" class="form-control" />
+                    <span asp-validation-for="JefeInmediato" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Contacto" class="form-label required"></label>
+                    <input asp-for="Contacto" class="form-control" />
+                    <span asp-validation-for="Contacto" class="text-danger small"></span>
+                </div>
+            </div>
+
+            @if (!esNuevo)
+            {
+                <p class="text-muted small mt-3 mb-0">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Los logros y competencias de este cargo se agregan
+                    <a asp-action="Index" asp-fragment="exp-@Model.LaboralId">dentro de su acordeón en el panel</a>.
+                </p>
+            }
+        </div>
+
+        <div class="cv-card-header justify-content-end border-top border-bottom-0">
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Guardar experiencia</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

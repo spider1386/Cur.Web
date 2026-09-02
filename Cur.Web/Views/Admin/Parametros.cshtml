@@ -1,0 +1,99 @@
+@model ParametrosAdminViewModel
+@{
+    ViewData["Title"] = "Parámetros";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1"><i class="bi bi-sliders me-2 text-primary"></i>Catálogo de parámetros</h1>
+        <p class="text-muted mb-0">
+            Alimenta todas las listas desplegables de la aplicación. Cada grupo es un valor
+            de la columna <code>Cdgo</code> de la tabla <code>Parametros</code>.
+        </p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Volver al panel</a>
+</div>
+
+<div class="accordion cv-acordeon" id="acordeonParametros">
+    @foreach (var grupo in Model.Grupos)
+    {
+        var abierto = Model.GrupoAbierto == grupo.Codigo;
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button @(abierto ? "" : "collapsed")" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#grp-@grupo.Codigo"
+                        aria-expanded="@(abierto ? "true" : "false")">
+                    <i class="bi @grupo.Icono me-2"></i>
+                    <span class="flex-grow-1">@grupo.Nombre</span>
+                    <span class="badge text-bg-secondary me-3">@grupo.Parametros.Count</span>
+                </button>
+            </h2>
+
+            <div id="grp-@grupo.Codigo" class="accordion-collapse collapse @(abierto ? "show" : "")"
+                 data-bs-parent="#acordeonParametros">
+                <div class="accordion-body">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                        <span class="text-muted small">Código de grupo: <code>@grupo.Codigo</code></span>
+                        <a class="btn btn-sm btn-primary" asp-action="Parametro" asp-route-grupo="@grupo.Codigo">
+                            <i class="bi bi-plus-lg me-1"></i>Nuevo parámetro
+                        </a>
+                    </div>
+
+                    @if (grupo.Parametros.Count == 0)
+                    {
+                        <div class="cv-empty py-3">
+                            <i class="bi bi-inboxes me-1"></i> Este grupo está vacío.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" style="width:5rem;">Id</th>
+                                        <th scope="col">Descripción</th>
+                                        <th scope="col" style="width:12rem;">Etiqueta (Tpo)</th>
+                                        <th scope="col" class="text-end" style="width:8rem;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var p in grupo.Parametros)
+                                    {
+                                        <tr>
+                                            <td class="text-muted">@p.ParametroId</td>
+                                            <td>@p.Descripcion</td>
+                                            <td class="text-muted small">@p.Tipo</td>
+                                            <td class="text-end">
+                                                <div class="d-inline-flex gap-1">
+                                                    <a class="btn btn-sm btn-outline-secondary"
+                                                       asp-action="Parametro" asp-route-id="@p.ParametroId" title="Editar">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <form asp-action="EliminarParametro" method="post"
+                                                          onsubmit="return confirm('¿Eliminar @p.Descripcion?');">
+                                                        <input type="hidden" name="id" value="@p.ParametroId" />
+                                                        <input type="hidden" name="grupo" value="@grupo.Codigo" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<p class="text-muted small mt-3 mb-0">
+    <i class="bi bi-info-circle me-1"></i>
+    Un parámetro que ya esté en uso por alguna hoja de vida no se puede eliminar: edítalo en su lugar.
+</p>

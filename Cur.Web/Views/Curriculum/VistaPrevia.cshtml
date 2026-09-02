@@ -1,0 +1,142 @@
+@model CurriculumViewModel
+@{
+    ViewData["Title"] = "Vista previa";
+    var b = Model.Basica!;
+    var competencias = Model.Experiencia.SelectMany(e => e.Competencias).ToList();
+
+    string Periodo(DateTime inicio, DateTime? fin) =>
+        $"{inicio.ToString("MMM yyyy")} – {(fin?.ToString("MMM yyyy") ?? "Actual")}";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4 cv-no-print">
+    <h1 class="h3 mb-0">Vista previa</h1>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" asp-action="Index">Volver al panel</a>
+        <a class="btn btn-primary" asp-action="Descargar">Descargar PDF</a>
+    </div>
+</div>
+
+<article class="cv-doc">
+    <header class="cv-doc-header">
+        @if (!string.IsNullOrWhiteSpace(b.UrlImagen) && b.UrlImagen.StartsWith('/'))
+        {
+            <img class="cv-foto" src="@b.UrlImagen" alt="Foto de perfil" />
+        }
+        <div>
+            <h1>@b.NombreCompleto</h1>
+            <p class="cv-doc-meta mb-1">@b.Profesion?.Descripcion</p>
+            <p class="cv-doc-meta mb-0">
+                Documento: @b.Documento.ToString("N0") ·
+                @b.Email · @b.TelefonoMovil · @b.TelefonoFijo
+                @if (b.Ciudad is not null)
+                {
+                    <text> · @b.Ciudad.Nombre, @b.Departamento?.Nombre</text>
+                }
+            </p>
+        </div>
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(b.PerfilProfesional))
+    {
+        <section class="cv-doc-section">
+            <h2>Perfil profesional</h2>
+            <p class="mt-2 mb-0 text-justify">@b.PerfilProfesional</p>
+        </section>
+    }
+
+    @if (Model.Experiencia.Count > 0)
+    {
+        <section class="cv-doc-section">
+            <h2>Experiencia laboral</h2>
+            @foreach (var exp in Model.Experiencia)
+            {
+                <div class="cv-doc-item">
+                    <div class="d-flex flex-wrap justify-content-between gap-2">
+                        <div>
+                            <h3>@exp.Cargo?.Descripcion</h3>
+                            <span class="cv-doc-meta">@exp.Empresa</span>
+                        </div>
+                        <span class="cv-doc-meta text-end">@Periodo(exp.FechaInicio, exp.FechaRetiro)</span>
+                    </div>
+
+                    @if (exp.Area is not null)
+                    {
+                        <div class="cv-doc-meta">Área: @exp.Area.Descripcion</div>
+                    }
+
+                    @if (exp.Logros.Count > 0)
+                    {
+                        <ul class="mt-2 mb-0">
+                            @foreach (var logro in exp.Logros)
+                            {
+                                <li>
+                                    <strong>@logro.Logro.TrimStart('-', ' ')</strong>
+                                    @if (!string.IsNullOrWhiteSpace(logro.Descripcion))
+                                    {
+                                        <text> — @logro.Descripcion.TrimStart('-', ' ')</text>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            }
+        </section>
+    }
+
+    @if (Model.Formacion.Count > 0)
+    {
+        <section class="cv-doc-section">
+            <h2>Formación académica</h2>
+            @foreach (var f in Model.Formacion)
+            {
+                <div class="cv-doc-item d-flex flex-wrap justify-content-between gap-2">
+                    <div>
+                        <h3>@f.TituloOtorgado</h3>
+                        <span class="cv-doc-meta">@f.Institucion</span>
+                    </div>
+                    <div class="text-end cv-doc-meta">
+                        <div>@Periodo(f.FechaInicio, f.FechaFinalizacion)</div>
+                        <div>
+                            @f.TipoFormacion?.Descripcion
+                            @if (f.Estado is not null)
+                            {
+                                <text> · @f.Estado.Descripcion</text>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(f.Intensidad))
+                            {
+                                <text> · @f.Intensidad h</text>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </section>
+    }
+
+    @if (competencias.Count > 0)
+    {
+        <section class="cv-doc-section">
+            <h2>Competencias y habilidades</h2>
+            <table class="table table-sm mt-2 mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">Competencia / habilidad</th>
+                        <th scope="col">Tipo</th>
+                        <th scope="col">Nivel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in competencias)
+                    {
+                        <tr>
+                            <td>@c.Descripcion</td>
+                            <td>@c.TipoCompetencia?.Descripcion</td>
+                            <td>@c.Medicion</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+    }
+</article>

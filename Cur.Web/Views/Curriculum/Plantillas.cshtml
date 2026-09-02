@@ -1,0 +1,89 @@
+@model PlantillasViewModel
+@{
+    ViewData["Title"] = "Plantillas";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1"><i class="bi bi-palette me-2 text-primary"></i>Plantillas</h1>
+        <p class="text-muted mb-0">
+            Elige el diseño de tu PDF. La vista previa de la derecha es el documento real, con tus datos.
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Volver al panel</a>
+        <a class="btn btn-primary" asp-action="Descargar"><i class="bi bi-file-earmark-pdf me-1"></i>Descargar</a>
+    </div>
+</div>
+
+<form asp-action="Plantillas" method="post">
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="d-grid gap-3">
+                @foreach (var p in Model.Disponibles)
+                {
+                    var activa = p.Valor == Model.Seleccionada;
+
+                    <label class="cv-plantilla @(activa ? "cv-plantilla-activa" : "")" for="plantilla-@p.Valor">
+                        <input class="form-check-input mt-1" type="radio" name="plantilla"
+                               id="plantilla-@p.Valor" value="@p.Valor" checked="@activa"
+                               data-url="@Url.Action("PrevisualizarPdf", new { plantilla = p.Valor })" />
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi @p.Icono text-primary"></i>
+                                <span class="fw-semibold">@p.Nombre</span>
+                                @if (activa)
+                                {
+                                    <span class="badge text-bg-primary ms-auto">En uso</span>
+                                }
+                            </div>
+                            <p class="text-muted small mb-0 mt-1">@p.Descripcion</p>
+                        </div>
+                    </label>
+                }
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mt-3">
+                <i class="bi bi-check-lg me-1"></i>Usar esta plantilla
+            </button>
+
+            <p class="text-muted small mt-3 mb-0">
+                <i class="bi bi-info-circle me-1"></i>
+                La plantilla queda guardada en tu cuenta y se aplica al descargar el PDF
+                y al enviártelo por correo.
+            </p>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="cv-visor">
+                <iframe id="visorPdf" title="Vista previa del PDF"
+                        src="@Url.Action("PrevisualizarPdf", new { plantilla = Model.Seleccionada })"></iframe>
+            </div>
+            <p class="text-muted small mt-2 mb-0 text-center">
+                Si tu navegador no muestra el PDF incrustado,
+                <a asp-action="PrevisualizarPdf" asp-route-plantilla="@Model.Seleccionada" target="_blank">ábrelo en otra pestaña</a>.
+            </p>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        // Cambiar de opcion recarga el visor sin guardar: guardar es el boton.
+        (function () {
+            const visor = document.getElementById('visorPdf');
+            if (!visor) return;
+
+            for (const radio of document.querySelectorAll('input[name="plantilla"]')) {
+                radio.addEventListener('change', function () {
+                    if (this.dataset.url) visor.src = this.dataset.url;
+
+                    for (const etiqueta of document.querySelectorAll('.cv-plantilla')) {
+                        etiqueta.classList.remove('cv-plantilla-activa');
+                    }
+                    this.closest('.cv-plantilla')?.classList.add('cv-plantilla-activa');
+                });
+            }
+        })();
+    </script>
+}

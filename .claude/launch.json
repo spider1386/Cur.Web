@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "cur-web",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "Cur.Web/Cur.Web.csproj", "--launch-profile", "http"],
+      "port": 5270,
+      "url": "http://localhost:5270"
+    }
+  ]
+}

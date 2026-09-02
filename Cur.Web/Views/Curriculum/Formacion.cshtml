@@ -1,0 +1,86 @@
+@model FormacionViewModel
+@{
+    var esNuevo = Model.FormacionId == 0;
+    ViewData["Title"] = esNuevo ? "Nueva formación" : "Editar formación";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">@ViewData["Title"]</h1>
+    <a class="btn btn-sm btn-outline-secondary" asp-action="Index">Volver al panel</a>
+</div>
+
+<div class="cv-card">
+    <form asp-action="Formacion" method="post" novalidate>
+        <div class="p-3 p-md-4">
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+            <input type="hidden" asp-for="FormacionId" />
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="TituloOtorgado" class="form-label required"></label>
+                    <input asp-for="TituloOtorgado" class="form-control" />
+                    <span asp-validation-for="TituloOtorgado" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Institucion" class="form-label required"></label>
+                    <input asp-for="Institucion" class="form-control" />
+                    <span asp-validation-for="Institucion" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="TipoFormacionId" class="form-label required"></label>
+                    <select asp-for="TipoFormacionId" asp-items="Model.Tipos" class="form-select">
+                        <option value="">Selecciona…</option>
+                    </select>
+                    <span asp-validation-for="TipoFormacionId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="AreaFormacionId" class="form-label required"></label>
+                    <select asp-for="AreaFormacionId" asp-items="Model.Areas" class="form-select">
+                        <option value="">Selecciona…</option>
+                    </select>
+                    <span asp-validation-for="AreaFormacionId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="EstadoId" class="form-label required"></label>
+                    <select asp-for="EstadoId" asp-items="Model.Estados" class="form-select">
+                        <option value="">Selecciona…</option>
+                    </select>
+                    <span asp-validation-for="EstadoId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="FechaInicio" class="form-label required"></label>
+                    <input asp-for="FechaInicio" type="date" class="form-control" />
+                    <span asp-validation-for="FechaInicio" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="FechaFinalizacion" class="form-label"></label>
+                    <input asp-for="FechaFinalizacion" type="date" class="form-control" />
+                    <div class="form-text">Déjalo vacío si aún estás cursando.</div>
+                    <span asp-validation-for="FechaFinalizacion" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Intensidad" class="form-label"></label>
+                    <input asp-for="Intensidad" class="form-control" placeholder="Ej. 120" />
+                    <div class="form-text">Horas, para cursos y diplomados.</div>
+                    <span asp-validation-for="Intensidad" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="cv-card-header justify-content-end border-top border-bottom-0">
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Guardar formación</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

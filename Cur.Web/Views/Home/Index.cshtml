@@ -1,0 +1,262 @@
+@{
+    ViewData["Title"] = "Crea tu hoja de vida profesional";
+    ViewData["Landing"] = true;
+}
+
+<section class="cv-hero">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="cv-pill">Gratis · Sin plantillas de Word</span>
+                <h1 class="cv-hero-title">Tu hoja de vida profesional, lista en minutos.</h1>
+                <p class="cv-hero-text">
+                    Registra tu experiencia, tu formación y tus logros una sola vez.
+                    Nosotros la organizamos en un PDF limpio que puedes descargar
+                    o enviarte por correo cuando lo necesites.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a class="btn btn-primary btn-lg px-4" asp-controller="Cuenta" asp-action="Registro">
+                        Crear mi hoja de vida
+                    </a>
+                    <a class="btn btn-outline-light btn-lg px-4" asp-controller="Cuenta" asp-action="Login">
+                        Ya tengo cuenta
+                    </a>
+                </div>
+                <ul class="cv-hero-checks">
+                    <li>Descarga en PDF ilimitada</li>
+                    <li>Tus datos quedan guardados y editables</li>
+                    <li>Departamentos y municipios de Colombia precargados</li>
+                </ul>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="cv-preview-card">
+                    <div class="cv-preview-head">
+                        <div class="cv-preview-avatar"></div>
+                        <div class="flex-grow-1">
+                            <div class="cv-line cv-line-lg"></div>
+                            <div class="cv-line cv-line-md"></div>
+                        </div>
+                    </div>
+                    <div class="cv-preview-section">
+                        <span class="cv-preview-title">Perfil profesional</span>
+                        <div class="cv-line"></div>
+                        <div class="cv-line"></div>
+                        <div class="cv-line cv-line-sm"></div>
+                    </div>
+                    <div class="cv-preview-section">
+                        <span class="cv-preview-title">Experiencia laboral</span>
+                        <div class="cv-preview-row">
+                            <div class="cv-line cv-line-md"></div>
+                            <div class="cv-line cv-line-xs"></div>
+                        </div>
+                        <div class="cv-preview-row">
+                            <div class="cv-line cv-line-md"></div>
+                            <div class="cv-line cv-line-xs"></div>
+                        </div>
+                    </div>
+                    <div class="cv-preview-section">
+                        <span class="cv-preview-title">Formación académica</span>
+                        <div class="cv-preview-row">
+                            <div class="cv-line cv-line-md"></div>
+                            <div class="cv-line cv-line-xs"></div>
+                        </div>
+                    </div>
+                    <span class="cv-preview-badge">PDF</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="como-funciona" class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="cv-section-title">Tres pasos y ya está</h2>
+            <p class="text-muted">No necesitas saber diseñar ni pelear con márgenes.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="cv-step">
+                    <span class="cv-step-num">1</span>
+                    <h3>Crea tu cuenta</h3>
+                    <p>Con tu correo basta. Te llega un mensaje de confirmación y entras a tu panel.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="cv-step">
+                    <span class="cv-step-num">2</span>
+                    <h3>Llena tu información</h3>
+                    <p>Datos personales, foto, experiencia con logros y competencias, y formación académica.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="cv-step">
+                    <span class="cv-step-num">3</span>
+                    <h3>Descarga el PDF</h3>
+                    <p>Genera el documento con un clic, o pide que te lo enviemos al correo como adjunto.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="disc" class="cv-disc py-5">
+    <div class="container">
+        <div class="text-center mb-2">
+            <span class="cv-pill cv-pill-oscuro">Solo informativo</span>
+        </div>
+        <div class="text-center mb-5">
+            <h2 class="cv-section-title">¿Desde qué perfil estás escribiendo?</h2>
+            <p class="text-muted mx-auto" style="max-width:44rem;">
+                El modelo DISC describe cuatro estilos de comportamiento en el trabajo. No es una prueba
+                ni algo que registremos: es una guía para que decidas qué resaltar en tu perfil profesional
+                y en tus logros. Lee los cuatro y quédate con el que más te suene.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="cv-disc-card cv-disc-d">
+                    <span class="cv-disc-letra">D</span>
+                    <h3>Dominancia</h3>
+                    <p class="cv-disc-rasgos">Directo, decidido, orientado a resultados y a los retos.</p>
+                    <p class="cv-disc-tip">
+                        <strong>Enfoca tu hoja de vida en:</strong> resultados medibles, metas superadas,
+                        decisiones que tomaste y equipos que dirigiste.
+                    </p>
+                    <p class="cv-disc-verbos">Dirigí · Lideré · Aumenté · Reduje</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="cv-disc-card cv-disc-i">
+                    <span class="cv-disc-letra">I</span>
+                    <h3>Influencia</h3>
+                    <p class="cv-disc-rasgos">Comunicativo, persuasivo, optimista y bueno para las relaciones.</p>
+                    <p class="cv-disc-tip">
+                        <strong>Enfoca tu hoja de vida en:</strong> trato con clientes, negociaciones,
+                        capacitaciones que diste y equipos que articulaste.
+                    </p>
+                    <p class="cv-disc-verbos">Negocié · Presenté · Capacité · Coordiné</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="cv-disc-card cv-disc-s">
+                    <span class="cv-disc-letra">S</span>
+                    <h3>Estabilidad</h3>
+                    <p class="cv-disc-rasgos">Constante, paciente, colaborativo y confiable en el largo plazo.</p>
+                    <p class="cv-disc-tip">
+                        <strong>Enfoca tu hoja de vida en:</strong> permanencia en los cargos, soporte
+                        sostenido, mejoras de proceso y trabajo en equipo.
+                    </p>
+                    <p class="cv-disc-verbos">Acompañé · Sostuve · Apoyé · Mantuve</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="cv-disc-card cv-disc-c">
+                    <span class="cv-disc-letra">C</span>
+                    <h3>Cumplimiento</h3>
+                    <p class="cv-disc-rasgos">Analítico, metódico, preciso y atento a la calidad.</p>
+                    <p class="cv-disc-tip">
+                        <strong>Enfoca tu hoja de vida en:</strong> datos y cifras, normas aplicadas,
+                        documentación, auditorías y controles que implementaste.
+                    </p>
+                    <p class="cv-disc-verbos">Analicé · Documenté · Verifiqué · Estandaricé</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-center text-muted small mt-4 mb-0">
+            La mayoría de las personas combina dos estilos. Si te ves en dos columnas, toma ideas de ambas.
+        </p>
+    </div>
+</section>
+
+<section id="caracteristicas" class="cv-features py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="cv-feature">
+                    <h3>PDF profesional</h3>
+                    <p>Tipografía consistente, secciones ordenadas y paginación automática. Sin fuentes rotas.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="cv-feature">
+                    <h3>Siempre editable</h3>
+                    <p>Cambia un cargo o agrega un logro y vuelve a generar el archivo cuando quieras.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="cv-feature">
+                    <h3>Foto de perfil</h3>
+                    <p>Sube tu foto en JPG, PNG o WEBP y queda incrustada en el encabezado del documento.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="cv-feature">
+                    <h3>Cuenta protegida</h3>
+                    <p>Acceso con ASP.NET Identity, bloqueo por intentos fallidos y recuperación por correo.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="preguntas" class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="cv-section-title text-center mb-4">Preguntas frecuentes</h2>
+                <div class="accordion" id="faq">
+                    <div class="accordion-item">
+                        <h3 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                ¿Tiene algún costo?
+                            </button>
+                        </h3>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faq">
+                            <div class="accordion-body">No. Puedes crear tu cuenta, editar tu hoja de vida y descargar el PDF las veces que quieras.</div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                ¿Puedo editar mi información después?
+                            </button>
+                        </h3>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faq">
+                            <div class="accordion-body">Sí. Todo queda guardado en tu cuenta y puedes modificarlo cuando cambies de trabajo o termines un estudio.</div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                ¿Qué pasa con mis datos personales?
+                            </button>
+                        </h3>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faq">
+                            <div class="accordion-body">
+                                Se usan únicamente para generar tu hoja de vida. Puedes revisar el detalle en la
+                                <a asp-controller="Home" asp-action="Privacy">política de tratamiento de datos</a>.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cv-cta">
+    <div class="container text-center">
+        <h2>Empieza ahora, te toma menos de lo que crees</h2>
+        <p>Crea tu cuenta y ten tu hoja de vida en PDF hoy mismo.</p>
+        <a class="btn btn-light btn-lg px-4 fw-semibold" asp-controller="Cuenta" asp-action="Registro">
+            Crear mi hoja de vida
+        </a>
+    </div>
+</section>

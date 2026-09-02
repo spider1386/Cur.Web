@@ -1,0 +1,31 @@
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<ul class="navbar-nav align-items-lg-center gap-lg-2">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="menuCuenta" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+                @UserManager.GetUserName(User)
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuCuenta">
+                <li><a class="dropdown-item" asp-controller="Curriculum" asp-action="Index">Mi panel</a></li>
+                <li><a class="dropdown-item" asp-controller="Curriculum" asp-action="Descargar">Descargar PDF</a></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                    <form asp-controller="Cuenta" asp-action="Logout" method="post" class="px-3 py-1">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary w-100">Cerrar sesión</button>
+                    </form>
+                </li>
+            </ul>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item"><a class="nav-link" asp-controller="Cuenta" asp-action="Login">Iniciar sesión</a></li>
+        <li class="nav-item">
+            <a class="btn btn-light btn-sm fw-semibold px-3" asp-controller="Cuenta" asp-action="Registro">Crear mi CV</a>
+        </li>
+    }
+</ul>

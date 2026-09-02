@@ -1,0 +1,101 @@
+@{
+    var esLanding = ViewData["Landing"] as bool? ?? false;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Curriculum</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="@(esLanding ? "landing-body" : "app-body")">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark cv-navbar sticky-top">
+            <div class="container">
+                <a class="navbar-brand fw-semibold" asp-controller="Home" asp-action="Index">
+                    <span class="cv-brand-mark">CV</span> Curriculum
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navPrincipal"
+                        aria-controls="navPrincipal" aria-expanded="false" aria-label="Abrir menú">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navPrincipal">
+                    <ul class="navbar-nav me-auto">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Curriculum" asp-action="Index">
+                                    <i class="bi bi-columns-gap me-1"></i>Mi panel
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Curriculum" asp-action="Perfil">
+                                    <i class="bi bi-person-vcard me-1"></i>Datos personales
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Curriculum" asp-action="VistaPrevia">
+                                    <i class="bi bi-eye me-1"></i>Vista previa
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Curriculum" asp-action="Plantillas">
+                                    <i class="bi bi-palette me-1"></i>Plantillas
+                                </a>
+                            </li>
+                            @if (User.IsInRole(Cur.Web.Models.Roles.Administrador))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link cv-nav-admin" asp-controller="Admin" asp-action="Index">
+                                        <i class="bi bi-shield-lock me-1"></i>Administración
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else if (esLanding)
+                        {
+                            <li class="nav-item"><a class="nav-link" href="#como-funciona">Cómo funciona</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#disc">Perfil DISC</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#caracteristicas">Características</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#preguntas">Preguntas</a></li>
+                        }
+                    </ul>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    @if (esLanding)
+    {
+        <main role="main">
+            <partial name="_Alertas" />
+            @RenderBody()
+        </main>
+    }
+    else
+    {
+        <div class="container py-4">
+            <main role="main">
+                <partial name="_Alertas" />
+                @RenderBody()
+            </main>
+        </div>
+    }
+
+    <footer class="cv-footer mt-auto">
+        <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
+            <span>&copy; @DateTime.Now.Year Curriculum</span>
+            <a asp-controller="Home" asp-action="Privacy">Tratamiento de datos</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
