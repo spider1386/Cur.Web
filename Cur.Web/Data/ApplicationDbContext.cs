@@ -22,6 +22,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<FormacionAcademica> FormacionAcademica => Set<FormacionAcademica>();
     public DbSet<LogroLaboral> LogrosLaborales => Set<LogroLaboral>();
     public DbSet<Competencia> Competencias => Set<Competencia>();
+    public DbSet<CartaPresentacion> CartasPresentacion => Set<CartaPresentacion>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -159,6 +160,22 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
             e.HasOne(c => c.Laboral).WithMany(x => x.Competencias)
                 .HasForeignKey(c => c.LaboralId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(c => c.TipoCompetencia).WithMany().HasForeignKey(c => c.TipoCompetenciaId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Tabla nueva (no heredada): nombres completos y una carta por usuario.
+        builder.Entity<CartaPresentacion>(e =>
+        {
+            e.ToTable("Carta_Presentacion");
+            e.HasKey(c => c.CartaId);
+            e.Property(c => c.CartaId).HasColumnName("CartaID");
+            e.Property(c => c.UserId).HasColumnName("UserId").HasMaxLength(450).IsRequired();
+            e.Property(c => c.CargoObjetivo).HasColumnName("CargoObjetivo").HasMaxLength(150).IsRequired();
+            e.Property(c => c.Empresa).HasColumnName("Empresa").HasMaxLength(250);
+            e.Property(c => c.Tono).HasColumnName("Tono").HasConversion<int>();
+            e.Property(c => c.Texto).HasColumnName("Texto").IsRequired();
+            e.Property(c => c.IncluirEnHojaDeVida).HasColumnName("IncluirEnHojaDeVida");
+            e.Property(c => c.ActualizadaEn).HasColumnName("ActualizadaEn").HasColumnType("datetime2");
+            e.HasIndex(c => c.UserId).IsUnique();
         });
     }
 }

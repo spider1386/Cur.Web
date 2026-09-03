@@ -1,6 +1,8 @@
 using System.Globalization;
 using Cur.Web.Data;
 using Cur.Web.Services;
+using Cur.Web.Services.Carta;
+using Cur.Web.Services.Html;
 using Cur.Web.Services.Pdf;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -68,8 +70,12 @@ builder.Services.AddScoped<ICatalogoService, CatalogoService>();
 builder.Services.AddScoped<ICurriculumService, CurriculumService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IPlantillaPreferencia, PlantillaPreferenciaService>();
+builder.Services.AddScoped<ITonoPreferencia, TonoPreferenciaService>();
+builder.Services.AddScoped<ICartaService, CartaService>();
+builder.Services.AddSingleton<IRedactorCarta, RedactorCarta>();
 builder.Services.AddScoped<IFotoPerfilStorage, FotoPerfilStorage>();
 builder.Services.AddSingleton<ICurriculumPdfGenerator, CurriculumPdfGenerator>();
+builder.Services.AddSingleton<ICurriculumHtmlGenerator, CurriculumHtmlGenerator>();
 
 builder.Services.AddControllersWithViews();
 

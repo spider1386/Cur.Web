@@ -1,0 +1,131 @@
+@model EstiloCartaViewModel
+@{
+    ViewData["Title"] = "Estilo de tu carta";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1"><i class="bi bi-soundwave me-2 text-primary"></i>¿Cómo quieres sonar?</h1>
+        <p class="text-muted mb-0">
+            Ocho afirmaciones para sugerir el registro con el que se redacta tu carta.
+        </p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index">
+        <i class="bi bi-arrow-left me-1"></i>Volver a la carta
+    </a>
+</div>
+
+<div class="alert alert-secondary d-flex gap-2">
+    <i class="bi bi-info-circle mt-1"></i>
+    <div>
+        <strong>Esto no es una prueba de personalidad ni un diagnóstico.</strong>
+        Solo define el tono de redacción de tu carta: qué tan directa, cálida, serena o
+        detallada suena. No se usa para evaluarte, no se compara con nadie y lo puedes
+        cambiar cuando quieras. Guardamos únicamente el estilo elegido, no tus respuestas.
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <form method="post" asp-action="Estilo">
+            <div class="cv-card">
+                <div class="p-3 p-md-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-1">
+                        <h2 class="h6 fw-semibold mb-0">Cuéntanos cómo trabajas</h2>
+                        <span class="text-muted small">
+                            1 = @Model.Escala[0] · 5 = @Model.Escala[^1]
+                        </span>
+                    </div>
+                    <p class="text-muted small mb-4">
+                        No hay respuestas buenas ni malas. Responde pensando en un día normal de trabajo.
+                    </p>
+
+                    @for (var i = 0; i < Model.Preguntas.Count; i++)
+                    {
+                        var pregunta = Model.Preguntas[i];
+                        var respuesta = i < Model.Respuestas.Count ? Model.Respuestas[i] : CuestionarioTono.Neutro;
+
+                        <div class="pb-3 mb-3 border-bottom">
+                            <p class="mb-2">
+                                <span class="text-muted small me-1">@pregunta.Numero.</span>@pregunta.Texto
+                            </p>
+                            <div class="d-flex flex-wrap gap-3">
+                                @for (var valor = CuestionarioTono.Minimo; valor <= CuestionarioTono.Maximo; valor++)
+                                {
+                                    var id = $"p{i}v{valor}";
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" id="@id"
+                                               name="Respuestas[@i]" value="@valor"
+                                               checked="@(valor == respuesta)" />
+                                        <label class="form-check-label small" for="@id">@valor</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-check-lg me-1"></i>Calcular mi estilo
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="cv-card mb-4">
+            <div class="p-3 p-md-4">
+                <h2 class="h6 fw-semibold mb-1">Tu estilo hoy</h2>
+                <p class="text-muted small mb-3">
+                    @(Model.Definido ? "Así se redactará tu carta." : "Sin definir todavía: se usa el equilibrado.")
+                </p>
+
+                @{ var actual = Tonos.Info(Model.Actual); }
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi @actual.Icono fs-4 text-primary"></i>
+                    <div>
+                        <div class="fw-semibold">@actual.Nombre</div>
+                        <p class="text-muted small mb-0">@actual.Descripcion</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form method="post" asp-action="EstiloDirecto">
+            <div class="cv-card">
+                <div class="p-3 p-md-4">
+                    <h2 class="h6 fw-semibold mb-1">O elígelo directamente</h2>
+                    <p class="text-muted small mb-3">
+                        Si ya sabes cómo quieres sonar, sáltate el cuestionario.
+                    </p>
+
+                    <div class="d-grid gap-2">
+                        @foreach (var opcion in Model.Disponibles)
+                        {
+                            var activo = opcion.Valor == Model.Actual;
+                            <label class="cv-plantilla @(activo ? "cv-plantilla-activa" : "")" for="tono-@opcion.Valor">
+                                <input class="form-check-input mt-1" type="radio" name="tono"
+                                       id="tono-@opcion.Valor" value="@opcion.Valor" checked="@activo" />
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi @opcion.Icono text-primary"></i>
+                                        <span class="fw-semibold">@opcion.Nombre</span>
+                                        @if (activo)
+                                        {
+                                            <span class="badge text-bg-primary ms-auto">En uso</span>
+                                        }
+                                    </div>
+                                    <p class="text-muted small mb-0 mt-1">@opcion.Descripcion</p>
+                                </div>
+                            </label>
+                        }
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-primary w-100 mt-3">
+                        Usar este estilo
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

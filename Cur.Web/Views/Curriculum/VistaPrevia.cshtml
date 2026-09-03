@@ -12,7 +12,17 @@
     <h1 class="h3 mb-0">Vista previa</h1>
     <div class="d-flex gap-2">
         <a class="btn btn-outline-secondary" asp-action="Index">Volver al panel</a>
-        <a class="btn btn-primary" asp-action="Descargar">Descargar PDF</a>
+        <div class="btn-group">
+            <a class="btn btn-primary" asp-action="Descargar">Descargar PDF</a>
+            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">Otros formatos</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" asp-action="Descargar">Descargar PDF</a></li>
+                <li><a class="dropdown-item" asp-action="DescargarHtml">Descargar HTML</a></li>
+            </ul>
+        </div>
     </div>
 </div>
 

@@ -6,7 +6,7 @@
 <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
     <div>
         <h1 class="h3 mb-1"><i class="bi bi-file-person me-2 text-primary"></i>Mi hoja de vida</h1>
-        <p class="text-muted mb-0">Completa cada sección y descarga tu PDF cuando quieras.</p>
+        <p class="text-muted mb-0">Completa cada sección y descarga tu hoja de vida en PDF o HTML cuando quieras.</p>
     </div>
 
     @if (Model.TienePerfil)
@@ -18,9 +18,30 @@
             <a class="btn btn-outline-secondary" asp-action="Plantillas">
                 <i class="bi bi-palette me-1"></i>Plantillas
             </a>
-            <a class="btn btn-primary" asp-action="Descargar">
-                <i class="bi bi-file-earmark-pdf me-1"></i>Descargar PDF
+            <a class="btn btn-outline-secondary" asp-controller="Carta" asp-action="Index">
+                <i class="bi bi-envelope-paper me-1"></i>Carta
             </a>
+            <div class="btn-group">
+                <a class="btn btn-primary" asp-action="Descargar">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>Descargar PDF
+                </a>
+                <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Otros formatos</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" asp-action="Descargar">
+                            <i class="bi bi-file-earmark-pdf me-2"></i>Descargar PDF
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" asp-action="DescargarHtml">
+                            <i class="bi bi-filetype-html me-2"></i>Descargar HTML
+                        </a>
+                    </li>
+                </ul>
+            </div>
             <form asp-action="EnviarPorCorreo" method="post" class="d-inline">
                 <button type="submit" class="btn btn-outline-primary">
                     <i class="bi bi-envelope-paper me-1"></i>Enviármelo por correo

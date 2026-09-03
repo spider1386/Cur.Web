@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text;
 
 namespace Cur.Web.Services.Pdf;
 
@@ -35,4 +36,27 @@ public static class PlantillaComun
 
     public static string FechaGeneracion() =>
         $"Generado el {DateTime.Now.ToString("dd 'de' MMMM 'de' yyyy", Cultura)}";
+
+    /// <summary>
+    /// Nombre del archivo descargado, con el mismo formato para todos los medios:
+    /// HV-nombre-apellido-20260903.pdf / .html
+    /// </summary>
+    public static string NombreArchivo(string? nombreCompleto, string extension)
+    {
+        var limpio = new StringBuilder();
+
+        foreach (var c in (nombreCompleto ?? string.Empty).Normalize(NormalizationForm.FormD))
+        {
+            var categoria = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (categoria == UnicodeCategory.NonSpacingMark) continue;
+
+            if (char.IsLetterOrDigit(c)) limpio.Append(char.ToLowerInvariant(c));
+            else if (char.IsWhiteSpace(c) && limpio.Length > 0 && limpio[^1] != '-') limpio.Append('-');
+        }
+
+        var slug = limpio.ToString().Trim('-');
+        if (slug.Length == 0) slug = "hoja-de-vida";
+
+        return $"HV-{slug}-{DateTime.Now:yyyyMMdd}.{extension}";
+    }
 }

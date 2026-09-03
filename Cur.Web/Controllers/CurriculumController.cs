@@ -1,7 +1,10 @@
+using System.Text;
 using Cur.Web.Models;
 using Cur.Web.Models.Entities;
 using Cur.Web.Models.ViewModels;
 using Cur.Web.Services;
+using Cur.Web.Services.Carta;
+using Cur.Web.Services.Html;
 using Cur.Web.Services.Pdf;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +19,8 @@ public class CurriculumController : Controller
     private readonly ICatalogoService _catalogos;
     private readonly IFotoPerfilStorage _fotos;
     private readonly ICurriculumPdfGenerator _pdf;
+    private readonly ICurriculumHtmlGenerator _html;
+    private readonly ICartaService _cartas;
     private readonly INotificadorCorreo _correo;
     private readonly IPlantillaPreferencia _plantillas;
     private readonly UserManager<IdentityUser> _userManager;
@@ -26,6 +31,8 @@ public class CurriculumController : Controller
         ICatalogoService catalogos,
         IFotoPerfilStorage fotos,
         ICurriculumPdfGenerator pdf,
+        ICurriculumHtmlGenerator html,
+        ICartaService cartas,
         INotificadorCorreo correo,
         IPlantillaPreferencia plantillas,
         UserManager<IdentityUser> userManager,
@@ -35,6 +42,8 @@ public class CurriculumController : Controller
         _catalogos = catalogos;
         _fotos = fotos;
         _pdf = pdf;
+        _html = html;
+        _cartas = cartas;
         _correo = correo;
         _plantillas = plantillas;
         _userManager = userManager;
@@ -336,8 +345,29 @@ public class CurriculumController : Controller
             return RedirectToAction(nameof(Perfil));
         }
 
-        var bytes = _pdf.Generar(cv, _fotos.LeerBytes(cv.Basica!.UrlImagen), _plantillas.Obtener(User));
+        var bytes = _pdf.Generar(cv, _fotos.LeerBytes(cv.Basica!.UrlImagen),
+            _plantillas.Obtener(User), await CartaPortadaAsync(ct));
+
         return File(bytes, "application/pdf", _pdf.NombreArchivo(cv));
+    }
+
+    /// <summary>Misma hoja de vida en un HTML autocontenido: un solo archivo, sin recursos externos.</summary>
+    [HttpGet]
+    public async Task<IActionResult> DescargarHtml(CancellationToken ct)
+    {
+        var cv = await _curriculum.ObtenerCurriculumAsync(UserId, ct);
+        if (!cv.TienePerfil)
+        {
+            TempData["Error"] = "Completa tus datos personales antes de descargar el HTML.";
+            return RedirectToAction(nameof(Perfil));
+        }
+
+        var html = _html.Generar(cv, _fotos.LeerBytes(cv.Basica!.UrlImagen),
+            _plantillas.Obtener(User), await CartaPortadaAsync(ct));
+
+        // Se entrega como adjunto y nunca en linea: el archivo trae datos del usuario
+        // y no debe renderizarse dentro del origen de la aplicacion.
+        return File(Encoding.UTF8.GetBytes(html), "text/html; charset=utf-8", _html.NombreArchivo(cv));
     }
 
     [HttpPost]
@@ -351,7 +381,9 @@ public class CurriculumController : Controller
             return RedirectToAction(nameof(Perfil));
         }
 
-        var bytes = _pdf.Generar(cv, _fotos.LeerBytes(cv.Basica!.UrlImagen), _plantillas.Obtener(User));
+        var bytes = _pdf.Generar(cv, _fotos.LeerBytes(cv.Basica!.UrlImagen),
+            _plantillas.Obtener(User), await CartaPortadaAsync(ct));
+
         var nombreArchivo = _pdf.NombreArchivo(cv);
         var destino = cv.Basica.Email;
 
@@ -418,6 +450,17 @@ public class CurriculumController : Controller
     }
 
     // ---------- Apoyo ----------
+
+    /// <summary>
+    /// Texto de la carta cuando el usuario pidio anteponerla a la hoja de vida; null en
+    /// cualquier otro caso. La vista previa de plantillas no la usa: ahi lo que se compara
+    /// es el diseno del CV, y una portada igual en las cuatro no aporta nada.
+    /// </summary>
+    private async Task<string?> CartaPortadaAsync(CancellationToken ct)
+    {
+        var carta = await _cartas.ObtenerAsync(UserId, ct);
+        return carta is { IncluirEnHojaDeVida: true } ? carta.Texto : null;
+    }
 
     /// <summary>Vuelve al panel dejando abierto el acordeon de la experiencia editada.</summary>
     private IActionResult AlPanel(int laboralId) =>

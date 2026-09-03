@@ -46,6 +46,11 @@
                                     <i class="bi bi-palette me-1"></i>Plantillas
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Carta" asp-action="Index">
+                                    <i class="bi bi-envelope-paper me-1"></i>Carta
+                                </a>
+                            </li>
                             @if (User.IsInRole(Cur.Web.Models.Roles.Administrador))
                             {
                                 <li class="nav-item">
