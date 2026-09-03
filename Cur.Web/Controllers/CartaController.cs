@@ -83,6 +83,10 @@ public class CartaController : Controller
 
         vm.Texto = _redactor.Redactar(cv, solicitud, vm.Tono);
 
+        // El textarea se pinta con el valor de ModelState cuando existe, y ahí está el que
+        // vino en el POST (vacío). Sin quitarlo, el borrador recién generado no se ve.
+        ModelState.Remove(nameof(vm.Texto));
+
         TempData["Exito"] = "Listo, este es tu borrador. Léelo, ajústalo a tu voz y guárdalo.";
         return View(nameof(Index), vm);
     }
